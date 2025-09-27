@@ -1,0 +1,5 @@
+venvx
+env
+media
+db.sqlite3
+.env

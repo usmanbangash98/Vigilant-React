@@ -1,0 +1,23 @@
+To run the project
+python3 manage.py runserver
+
+
+To clear the database
+python3 manage.py flush
+
+
+1 To createsuperuser
+python3 manage.py createsuperuser
+
+
+let view citizen del krna ho
+
+to activate virtual environment
+myenv\Scripts\activate
+
+to deactivate virtual environment
+deactivate
+
+
+
+http://127.0.0.1:8000/admin/login/?next=/admin/
