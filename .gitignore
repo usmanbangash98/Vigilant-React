@@ -9,7 +9,6 @@ db.sqlite3-journal
 media/
 
 # Django environment directories
-.env
 .venv
 env/
 venv/
@@ -62,11 +61,7 @@ out/
 .project
 .classpath
 # Local development settings #
-*.env
-*.env.local
-*.env.development.local
-*.env.test.local
-*.env.production.local
+
 
 # Testing #
 coverage/

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { buildBackendUrl } from "@/lib/utils";
+import { buildBackendUrl, buildCitizenStatusUrl, getCookie } from "@/lib/utils";
 import { RefreshCcw } from "lucide-react";
 
 interface Citizen {
@@ -71,24 +71,18 @@ export default function DatabasePage() {
   const handleStatusUpdate = async (citizenId: number, newStatus: string) => {
     try {
       // Get CSRF token from cookies
-      const getCsrfToken = () => {
-        const cookieValue = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("csrftoken="))
-          ?.split("=")[1];
-        return cookieValue || "";
-      };
+      const csrfToken = getCookie("csrftoken") || getCookie("csrf") || "";
 
       // Use the correct endpoint format from your Django views
       const action = newStatus.toLowerCase(); // 'wanted' or 'free'
       const resp = await fetch(
-        buildBackendUrl(`/api/update_citizen_status/${citizenId}/${action}/`),
+        buildCitizenStatusUrl(citizenId, action),
         {
           method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": getCsrfToken(),
+            "X-CSRFToken": csrfToken,
           },
         },
       );

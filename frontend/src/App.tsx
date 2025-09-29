@@ -8,6 +8,7 @@ import ReportsPage from "@/pages/dashboard/ReportsPage";
 import DatabasePage from "@/pages/dashboard/DatabasePage";
 import SettingsPage from "@/pages/dashboard/SettingsPage";
 import AlertsPage from "@/pages/dashboard/AlertsPage";
+import AddCitizenPage from "@/pages/AddCitizenPage";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PrivateRoute from "@/components/PrivateRoute";
 import PublicRoute from "@/components/PublicRoute";
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="alerts" element={<AlertsPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="database" element={<DatabasePage />} />
+            <Route path="add-citizen" element={<AddCitizenPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
           <Route path="/" element={<RootRedirect />} />

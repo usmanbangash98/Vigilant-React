@@ -258,6 +258,63 @@ def api_detect_image(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
+def api_add_citizen(request):
+    try:
+        # Get form data
+        name = request.POST.get('name')
+        national_id = request.POST.get('national_id')
+        address = request.POST.get('address')
+        image = request.FILES.get('image')
+        
+        if not all([name, national_id, address, image]):
+            return JsonResponse({
+                'success': False,
+                'error': 'All fields (name, national_id, address, image) are required'
+            }, status=400)
+        
+        # Check if citizen with this national_id already exists
+        if Person.objects.filter(national_id=national_id).exists():
+            return JsonResponse({
+                'success': False,
+                'error': 'Citizen with that National ID already exists'
+            }, status=400)
+        
+        # Save the uploaded image
+        fs = FileSystemStorage()
+        filename = fs.save(image.name, image)
+        uploaded_file_url = fs.url(filename)
+        
+        # Create the person record
+        person = Person.objects.create(
+            name=name,
+            national_id=national_id,
+            address=address,
+            picture=uploaded_file_url[1:],  # Remove leading slash
+            status="Free",
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Citizen successfully added',
+            'citizen': {
+                'id': person.id,
+                'name': person.name,
+                'national_id': person.national_id,
+                'address': person.address,
+                'picture': person.picture,
+                'status': person.status
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
 def api_update_citizen_status(request, citizen_id, action):
     try:
         citizen = get_object_or_404(Person, pk=citizen_id)

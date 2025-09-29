@@ -12,6 +12,7 @@ import {
   Settings,
   Shield,
   ShieldAlert,
+  UserPlus,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -64,6 +65,13 @@ export default function DashboardPage() {
         description: "Manage intelligence records",
         icon: Database,
         path: "/dashboard/database",
+      },
+      {
+        id: "add-citizen",
+        label: "Add Citizen",
+        description: "Register new person",
+        icon: UserPlus,
+        path: "/dashboard/add-citizen",
       },
     ],
     [],

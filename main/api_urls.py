@@ -8,6 +8,7 @@ urlpatterns = [
     
     path('users', api_views.api_users, name='api_users'),
     path('citizens', api_views.api_citizens, name='api_citizens'),
+    path('add-citizen', api_views.api_add_citizen, name='api_add_citizen'),
     path('spotted-criminals', api_views.api_spotted_criminals, name='api_spotted_criminals'),
     path('detect-image', api_views.api_detect_image, name='api_detect_image'),
     path('citizen/<int:citizen_id>/<str:action>', api_views.api_update_citizen_status, name='api_update_citizen_status'),
