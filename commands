@@ -7,7 +7,7 @@ python3 manage.py flush
 
 
 1 To createsuperuser
-python3 manage.py createsuperuser
+python manage.py createsuperuser
 
 
 let view citizen del krna ho

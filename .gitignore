@@ -61,8 +61,6 @@ out/
 *.swo
 .project
 .classpath
-.settings/
-
 # Local development settings #
 *.env
 *.env.local
@@ -79,3 +77,6 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
+
+# Allow frontend src lib utils to be included (override generic lib/ ignore patterns)
+!frontend/src/lib/**
