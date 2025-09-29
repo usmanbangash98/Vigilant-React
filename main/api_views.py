@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 import json
 import bcrypt
-from main.models import User, Person, ThiefLocation
+from main.models import User, Person, ThiefLocation, DetectionEvent, DetectionMatch
 import face_recognition
 import numpy as np
 from django.core.files.storage import FileSystemStorage
@@ -158,6 +158,9 @@ def api_spotted_criminals(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def api_detect_image(request):
+    import time
+    start_time = time.time()
+    
     try:
         # Accept multipart upload with field 'image'
         if request.method != "POST":
@@ -247,8 +250,62 @@ def api_detect_image(request):
                     "box": [int(top), int(right), int(bottom), int(left)],
                 })
 
+        # Calculate processing time and statistics
+        processing_time = time.time() - start_time
+        total_faces = len(detections)
+        known_faces = sum(1 for d in detections if d['name'] != 'Unknown')
+        unknown_faces = total_faces - known_faces
+        
+        # Get current user ID from session
+        user_id = request.session.get("id")
+        
+        # Create detection event record
+        # Store the URL path for easier access from frontend
+        image_url_path = uploaded_url  # Keep the full URL path with /media/
+        detection_event = DetectionEvent.objects.create(
+            image_name=uploaded.name,
+            image_path=image_url_path,
+            total_faces_detected=total_faces,
+            known_faces_matched=known_faces,
+            unknown_faces_detected=unknown_faces,
+            processing_time_seconds=processing_time,
+            detection_method='image_upload',
+            user_id=user_id
+        )
+        
+        # Create detection match records for each face
+        for detection in detections:
+            matched_person = None
+            if detection['name'] != 'Unknown':
+                # Find the person by name (you might want to improve this matching logic)
+                try:
+                    matched_person = Person.objects.filter(name__icontains=detection['name'].split()[0]).first()
+                except:
+                    pass
+            
+            DetectionMatch.objects.create(
+                detection_event=detection_event,
+                matched_person=matched_person,
+                confidence_score=detection['confidence'],
+                is_match=(detection['name'] != 'Unknown'),
+                face_top=detection['box'][0],
+                face_right=detection['box'][1],
+                face_bottom=detection['box'][2],
+                face_left=detection['box'][3]
+            )
+        
         # Return the saved image URL so the frontend can render it and overlay boxes
-        return JsonResponse({"success": True, "detections": detections, "image_url": uploaded_url})
+        return JsonResponse({
+            "success": True, 
+            "detections": detections, 
+            "image_url": uploaded_url,
+            "statistics": {
+                "total_faces": total_faces,
+                "known_faces": known_faces,
+                "unknown_faces": unknown_faces,
+                "processing_time": round(processing_time, 2)
+            }
+        })
     except Exception as e:
         return JsonResponse({
             'success': False,
@@ -311,6 +368,131 @@ def api_add_citizen(request):
             'success': False,
             'error': str(e)
         }, status=500)
+
+
+@require_http_methods(["GET"])
+def api_reports_statistics(request):
+    try:
+        from django.db.models import Sum, Avg, Count
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Get date range (default to last 30 days)
+        days = int(request.GET.get('days', 30))
+        today = timezone.now().date()
+        start_date = timezone.make_aware(timezone.datetime.combine(today - timedelta(days=days-1), timezone.datetime.min.time()))
+        end_date = timezone.now()
+        
+        # Overall statistics
+        total_detections = DetectionEvent.objects.filter(created_at__gte=start_date).count()
+        total_faces_detected = DetectionEvent.objects.filter(created_at__gte=start_date).aggregate(
+            total=Sum('total_faces_detected'))['total'] or 0
+        total_known_matches = DetectionEvent.objects.filter(created_at__gte=start_date).aggregate(
+            total=Sum('known_faces_matched'))['total'] or 0
+        total_unknown_faces = DetectionEvent.objects.filter(created_at__gte=start_date).aggregate(
+            total=Sum('unknown_faces_detected'))['total'] or 0
+        avg_processing_time = DetectionEvent.objects.filter(created_at__gte=start_date).aggregate(
+            avg=Avg('processing_time_seconds'))['avg'] or 0
+        
+        # Daily statistics for charts
+        daily_stats = []
+        for i in range(days):
+            current_date = today - timedelta(days=days-1-i)
+            date_start = timezone.make_aware(timezone.datetime.combine(current_date, timezone.datetime.min.time()))
+            date_end = timezone.make_aware(timezone.datetime.combine(current_date, timezone.datetime.max.time()))
+            
+            day_detections = DetectionEvent.objects.filter(
+                created_at__gte=date_start,
+                created_at__lte=date_end
+            ).aggregate(
+                detections=Count('id'),
+                faces=Sum('total_faces_detected'),
+                known=Sum('known_faces_matched'),
+                unknown=Sum('unknown_faces_detected'),
+                avg_time=Avg('processing_time_seconds')
+            )
+            
+            daily_stats.append({
+                'date': current_date.strftime('%Y-%m-%d'),
+                'detections': day_detections['detections'] or 0,
+                'total_faces': day_detections['faces'] or 0,
+                'known_faces': day_detections['known'] or 0,
+                'unknown_faces': day_detections['unknown'] or 0,
+                'avg_processing_time': round(day_detections['avg_time'] or 0, 2)
+            })
+        
+        # Top matched persons
+        top_matches = DetectionMatch.objects.filter(
+            detection_event__created_at__gte=start_date,
+            is_match=True,
+            matched_person__isnull=False
+        ).values(
+            'matched_person__name',
+            'matched_person__status'
+        ).annotate(
+            match_count=Count('id'),
+            avg_confidence=Avg('confidence_score')
+        ).order_by('-match_count')[:10]
+        
+        # Recent detections
+        recent_detections = DetectionEvent.objects.filter(
+            created_at__gte=start_date
+        ).order_by('-created_at')[:20].values(
+            'id', 'image_name', 'image_path', 'total_faces_detected', 
+            'known_faces_matched', 'unknown_faces_detected',
+            'processing_time_seconds', 'created_at'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'statistics': {
+                'overview': {
+                    'total_detections': total_detections,
+                    'total_faces_detected': total_faces_detected,
+                    'total_known_matches': total_known_matches,
+                    'total_unknown_faces': total_unknown_faces,
+                    'avg_processing_time': round(avg_processing_time, 2),
+                    'match_rate': round((total_known_matches / max(total_faces_detected, 1)) * 100, 1)
+                },
+                'daily_stats': daily_stats,
+                'top_matches': list(top_matches),
+                'recent_detections': list(recent_detections)
+            }
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@require_http_methods(["GET"])
+def api_test_media(request):
+    """Test endpoint to check media file serving"""
+    import os
+    from django.conf import settings
+    
+    try:
+        # List files in media directory
+        media_root = settings.MEDIA_ROOT
+        if os.path.exists(media_root):
+            files = os.listdir(media_root)
+            return JsonResponse({
+                'success': True,
+                'media_root': media_root,
+                'media_url': settings.MEDIA_URL,
+                'files': files[:10]  # First 10 files
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': f'Media directory does not exist: {media_root}'
+            })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })
 
 
 @csrf_exempt

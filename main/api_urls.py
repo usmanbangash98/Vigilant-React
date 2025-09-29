@@ -11,5 +11,7 @@ urlpatterns = [
     path('add-citizen', api_views.api_add_citizen, name='api_add_citizen'),
     path('spotted-criminals', api_views.api_spotted_criminals, name='api_spotted_criminals'),
     path('detect-image', api_views.api_detect_image, name='api_detect_image'),
+    path('reports-statistics', api_views.api_reports_statistics, name='api_reports_statistics'),
+    path('test-media', api_views.api_test_media, name='api_test_media'),
     path('citizen/<int:citizen_id>/<str:action>', api_views.api_update_citizen_status, name='api_update_citizen_status'),
 ]

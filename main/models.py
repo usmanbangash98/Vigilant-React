@@ -53,3 +53,50 @@ class File(models.Model):
   file = models.FileField(blank=False, null=False)
   remark = models.CharField(max_length=20)
   timestamp = models.DateTimeField(auto_now_add=True)
+
+class DetectionEvent(models.Model):
+    # Image information
+    image_name = models.CharField(max_length=255)
+    image_path = models.CharField(max_length=500)
+    
+    # Detection statistics
+    total_faces_detected = models.IntegerField(default=0)
+    known_faces_matched = models.IntegerField(default=0)
+    unknown_faces_detected = models.IntegerField(default=0)
+    
+    # Processing information
+    processing_time_seconds = models.FloatField(default=0.0)
+    detection_method = models.CharField(max_length=50, default='image_upload')  # 'image_upload', 'webcam', etc.
+    
+    # User who performed the detection
+    user_id = models.IntegerField(null=True, blank=True)  # Reference to User.id
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Detection {self.id} - {self.total_faces_detected} faces ({self.known_faces_matched} known)"
+
+class DetectionMatch(models.Model):
+    # Link to the detection event
+    detection_event = models.ForeignKey(DetectionEvent, on_delete=models.CASCADE, related_name='matches')
+    
+    # Match information
+    matched_person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, blank=True)
+    confidence_score = models.FloatField(default=0.0)
+    is_match = models.BooleanField(default=False)
+    
+    # Face location in image (bounding box)
+    face_top = models.IntegerField(default=0)
+    face_right = models.IntegerField(default=0)
+    face_bottom = models.IntegerField(default=0)
+    face_left = models.IntegerField(default=0)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        if self.matched_person:
+            return f"Match: {self.matched_person.name} ({self.confidence_score:.2f})"
+        return f"Unknown face ({self.confidence_score:.2f})"
