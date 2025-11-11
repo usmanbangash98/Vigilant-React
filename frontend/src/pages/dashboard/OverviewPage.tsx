@@ -11,7 +11,7 @@ import { Camera, History, ShieldAlert, Users } from "lucide-react";
 export default function OverviewPage() {
   return (
     <div className="space-y-8">
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -60,15 +60,15 @@ export default function OverviewPage() {
             <p className="text-xs text-muted-foreground">3 pending invitations</p>
           </CardContent>
         </Card>
-      </section>
+      </section> */}
 
       <section className="grid gap-6 lg:grid-cols-2">
         <Card className="border-dashed border-border/60">
           <CardHeader>
             <CardTitle>Identify thief</CardTitle>
             <CardDescription>
-              Upload images or use your webcam to cross-match with the VigilantEye
-              database.
+              Upload images or use your webcam to cross-match with the
+              VigilantEye database.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

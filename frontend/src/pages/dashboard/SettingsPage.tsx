@@ -10,13 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Save, ShieldCheck } from "lucide-react";
+
+import { Save } from "lucide-react";
 
 export default function SettingsPage() {
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [smsAlerts, setSmsAlerts] = useState(false);
   const [account, setAccount] = useState<{
     id: number;
     name: string;
@@ -137,40 +134,6 @@ export default function SettingsPage() {
           <Button type="button" className="gap-2">
             <Save className="h-4 w-4" />
             Save contact details
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/70 shadow-sm">
-        <CardHeader>
-          <CardTitle>Notification channels</CardTitle>
-          <CardDescription>
-            Choose how VigilantEye should reach on-call responders.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium">Email alerts</p>
-              <p className="text-xs text-muted-foreground">
-                Receive summaries and critical incidents via email.
-              </p>
-            </div>
-            <Switch checked={emailAlerts} onCheckedChange={setEmailAlerts} />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium">SMS alerts</p>
-              <p className="text-xs text-muted-foreground">
-                Enable SMS escalation for priority 1 incidents.
-              </p>
-            </div>
-            <Switch checked={smsAlerts} onCheckedChange={setSmsAlerts} />
-          </div>
-          <Button type="button" variant="secondary" className="gap-2">
-            <ShieldCheck className="h-4 w-4" />
-            Apply notification settings
           </Button>
         </CardContent>
       </Card>

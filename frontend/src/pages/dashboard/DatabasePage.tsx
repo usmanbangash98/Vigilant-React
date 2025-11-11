@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { buildBackendUrl, buildCitizenStatusUrl, getCookie } from "@/lib/utils";
-import { RefreshCcw } from "lucide-react";
 
 interface Citizen {
   id: number;
@@ -75,17 +74,14 @@ export default function DatabasePage() {
 
       // Use the correct endpoint format from your Django views
       const action = newStatus.toLowerCase(); // 'wanted' or 'free'
-      const resp = await fetch(
-        buildCitizenStatusUrl(citizenId, action),
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
+      const resp = await fetch(buildCitizenStatusUrl(citizenId, action), {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
         },
-      );
+      });
 
       if (!resp.ok) {
         const errorData = await resp.json().catch(() => ({}));
@@ -125,14 +121,6 @@ export default function DatabasePage() {
             Search, filter, and act on the central VigilantEye knowledge base.
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="gap-2"
-          onClick={() => window.location.reload()}>
-          <RefreshCcw className="h-4 w-4" />
-          Refresh
-        </Button>
       </div>
 
       {error && (

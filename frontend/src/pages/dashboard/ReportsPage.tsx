@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { 
   BarChart3, 
-  RefreshCcw, 
   Users, 
   Clock, 
   TrendingUp
@@ -144,11 +142,7 @@ export default function ReportsPage() {
             <option value={7}>Last 7 days</option>
             <option value={30}>Last 30 days</option>
             <option value={90}>Last 90 days</option>
-          </select>
-          <Button type="button" variant="outline" onClick={loadStatistics} className="gap-2">
-            <RefreshCcw className="h-4 w-4" />
-            Refresh
-          </Button>
+          </select> 
         </div>
       </div>
 

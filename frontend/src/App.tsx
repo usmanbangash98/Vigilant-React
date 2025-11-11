@@ -7,7 +7,6 @@ import LiveMonitoringPage from "@/pages/dashboard/LiveMonitoringPage";
 import ReportsPage from "@/pages/dashboard/ReportsPage";
 import DatabasePage from "@/pages/dashboard/DatabasePage";
 import SettingsPage from "@/pages/dashboard/SettingsPage";
-import AlertsPage from "@/pages/dashboard/AlertsPage";
 import AddCitizenPage from "@/pages/AddCitizenPage";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PrivateRoute from "@/components/PrivateRoute";
@@ -36,7 +35,6 @@ export default function App() {
             }>
             <Route index element={<OverviewPage />} />
             <Route path="live-monitoring" element={<LiveMonitoringPage />} />
-            <Route path="alerts" element={<AlertsPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="database" element={<DatabasePage />} />
             <Route path="add-citizen" element={<AddCitizenPage />} />

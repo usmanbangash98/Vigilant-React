@@ -13,10 +13,10 @@ python manage.py createsuperuser
 let view citizen del krna ho
 
 to activate virtual environment
-myenv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 
 to deactivate virtual environment
-deactivate
+.\.venv\Scripts\Deactivate.ps1
 
 
 

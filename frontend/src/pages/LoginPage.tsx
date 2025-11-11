@@ -1,25 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import {
-  Loader2,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { Loader2, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildLoginUrl, getCookie, cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -110,160 +96,100 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-br from-background via-muted/40 to-background px-4 py-12">
-      <div className="pointer-events-none absolute -top-24 right-1/2 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
-      <Card className="relative w-full max-w-5xl overflow-hidden border-border/60 bg-background/80 shadow-2xl shadow-primary/10 backdrop-blur">
-        <div className="grid gap-0 md:grid-cols-[1.1fr,1fr]">
-          <div className="relative hidden bg-gradient-to-br from-primary to-primary/60 p-8 text-primary-foreground md:flex md:flex-col md:justify-between">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-3 py-1 text-sm font-medium">
-                <Sparkles className="h-4 w-4" />
-                VigilantEye Security Suite
+    <div className="flex min-h-screen w-full items-center justify-center bg-muted/20 px-4 py-12">
+      <Card className="w-full max-w-md border border-border/60 bg-background shadow-xl">
+        <div className="flex flex-col p-6 sm:p-8">
+          <CardHeader className="space-y-3 p-0 text-center">
+            <CardTitle className="text-2xl font-semibold">
+              Sign in to your account
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 pt-6">
+            {error && (
+              <div className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive shadow-sm">
+                {error}
               </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-3xl font-semibold tracking-tight">
-                  Stay protected, always.
-                </h2>
-                <p className="text-sm text-primary-foreground/80">
-                  Access real-time monitoring, intelligent alerts, and
-                  comprehensive reporting from a single dashboard.
-                </p>
-              </div>
-            </div>
-            <div className="space-y-3 text-sm text-primary-foreground/85">
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="mt-0.5 h-4 w-4" />
-                <div>
-                  <p className="font-medium">Enterprise-grade encryption</p>
-                  <p className="text-primary-foreground/70">
-                    Your credentials and data remain secure with end-to-end
-                    protection.
-                  </p>
+                <Label htmlFor="username" className="text-sm font-medium">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="username"
+                    name="username"
+                    autoComplete="username"
+                    placeholder="name@example.com"
+                    className="pl-9 transition-all duration-150 focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/30"
+                    value={username}
+                    onChange={(e) =>
+                      setValues((v) => ({ ...v, username: e.target.value }))
+                    }
+                  />
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-4 w-4" />
-                <div>
-                  <p className="font-medium">Instant anomaly alerts</p>
-                  <p className="text-primary-foreground/70">
-                    Get notified instantly when something needs your attention.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="relative flex flex-col justify-center p-6 sm:p-10">
-            <CardHeader className="space-y-2 p-0">
-              <CardTitle className="text-2xl">Welcome back</CardTitle>
-              <CardDescription>
-                Sign in to continue to VigilantEye
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-0 pt-6">
-              {error && (
-                <div className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive shadow-sm">
-                  {error}
-                </div>
-              )}
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="username" className="text-sm font-medium">
-                    Username or Email
-                  </Label>
-                  <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground text-purple-600" />
-                    <Input
-                      id="username"
-                      name="username"
-                      autoComplete="username"
-                      placeholder="you@example.com"
-                      className="pl-9 transition-all duration-150 focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/30"
-                      value={username}
-                      onChange={(e) =>
-                        setValues((v) => ({ ...v, username: e.target.value }))
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm font-medium">
                   <Label htmlFor="password" className="text-sm font-medium">
                     Password
                   </Label>
-                  <div className="relative">
-                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground text-purple-600" />
-                    <Input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="current-password"
-                      className="pl-9 pr-10 transition-all duration-150 focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/30"
-                      value={password}
-                      onChange={(e) =>
-                        setValues((v) => ({ ...v, password: e.target.value }))
-                      }
-                    />
-                    <button
-                      type="button"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
-                      onClick={() => setShowPassword((s) => !s)}
-                      className={cn(
-                        "absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
-                      )}>
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
                 </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <label className="flex items-center gap-2 text-muted-foreground">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border border-muted-foreground/30 text-primary focus-visible:ring-primary/40"
-                    />
-                    Remember me
-                  </label>
-                  <a
-                    href="/auth/forgot-password"
-                    className="font-medium text-primary transition-colors hover:text-primary/80">
-                    Forgot password?
-                  </a>
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    className="pl-9 pr-10 transition-all duration-150 focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/30"
+                    value={password}
+                    onChange={(e) =>
+                      setValues((v) => ({ ...v, password: e.target.value }))
+                    }
+                  />
+                  <button
+                    type="button"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                    onClick={() => setShowPassword((s) => !s)}
+                    className={cn(
+                      "absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+                    )}>
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
+              </div>
 
-                <Button
-                  type="submit"
-                  className="w-full transition-transform duration-150 hover:scale-[1.01]"
-                  disabled={submitting}>
-                  {submitting ? (
-                    <span className="inline-flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Signing in...
-                    </span>
-                  ) : (
-                    "Sign in"
-                  )}
-                </Button>
-              </form>
+              <Button
+                type="submit"
+                className="w-full transition-transform duration-150 hover:scale-[1.01]"
+                disabled={submitting}>
+                {submitting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Signing in...
+                  </span>
+                ) : (
+                  "Sign in"
+                )}
+              </Button>
+            </form>
 
-              <p className="mt-6 text-center text-sm text-muted-foreground">
-                Need an account?{" "}
-                <a
-                  href="/auth/register"
-                  className="font-medium text-primary transition-colors hover:text-primary/80">
-                  Contact your administrator
-                </a>
-                .
+            <div className="text-center text-sm text-muted-foreground mt-4">
+              <p className="text-sm text-muted-foreground">
+                Don't have an account? Contact the administrator to get an
+                account.
               </p>
-            </CardContent>
-          </div>
+            </div>
+          </CardContent>
         </div>
       </Card>
     </div>

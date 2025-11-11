@@ -93,7 +93,7 @@ export default function AddCitizenPage() {
         // Reset file input
         const fileInput = document.getElementById("image") as HTMLInputElement;
         if (fileInput) fileInput.value = "";
-        
+
         // Redirect after 2 seconds
         setTimeout(() => {
           navigate("/dashboard/database");
@@ -114,7 +114,7 @@ export default function AddCitizenPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            Add Citizen/Thief
+            Add Thief
           </CardTitle>
           <CardDescription>
             Add a new person to the criminal detection system database
@@ -127,7 +127,7 @@ export default function AddCitizenPage() {
               {error}
             </div>
           )}
-          
+
           {success && (
             <div className="mb-4 flex items-center gap-2 rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700">
               <CheckCircle className="h-4 w-4" />
@@ -219,11 +219,7 @@ export default function AddCitizenPage() {
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={submitting}
-            >
+            <Button type="submit" className="w-full" disabled={submitting}>
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
